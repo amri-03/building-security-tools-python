@@ -29,14 +29,17 @@ class Netcat:
 				self.socket.send(self.buffer)
 
 			while True:
-				response = self.socket.recv(4096)
-				if not response:
-					print("Connection closed by server.")
-					return
+				response = b""
 
+				while b"<END>" not in response:
+					data = self.socket.recv(4096)
+					if not data:
+						print("Connection closed by server.")
+						self.socket.close()
+						return
 					response += data
 
-				print(response.decode(), end="")
+				print(response.replace(b"<END>", b"").decode(), end="")
 
 				buffer = input("") + "\n"
 
@@ -120,7 +123,7 @@ class Netcat:
 
 		else:
 			while True:
-				client_socket.send(b"<BHP: #>")
+				client_socket.send(b"<BHP: #> <END>")
 				cmd_buffer = b""
 
 				while b"\n" not in cmd_buffer:
@@ -143,7 +146,7 @@ class Netcat:
 				if not response:
 					response = b""
 
-				client_socket.send(response)
+				client_socket.send(response + b"<END>")
 
 if __name__ == "__main__":
 	args = parse_args()
