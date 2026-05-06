@@ -103,16 +103,25 @@ class Netcat:
 				cmd_buffer = b""
 
 				while b"\n" not in cmd_buffer:
-					cmd_buffer += client_socket.recv(64)
+					data = client_socket.recv(64)
+
+					if not data:
+						return
+
+					cmd_buffer += data
 
 				cmd = cmd_buffer.decode().strip()
 
 				if cmd.lower() in ["exit", "quit", "q"]:
 					client_socket.send(b"Closing connection...\n")
 					client_socket.close()
-					break
+					return
 
 				response = self.execute(cmd)
+
+				if not response:
+					response = b""
+
 				client_socket.send(response)
 
 if __name__ == "__main__":
