@@ -48,14 +48,17 @@ This part took most of the time — I faced multiple issues:
 ### Start server
 ```bash
 python netcat.py -t 0.0.0.0 -p 5555 -l -c
+```
 
 ### Connect as client
 ```bash
 python netcat.py -t 127.0.0.1 -p 5555
+```
 
 ### Execute a command
 ```bash
 python netcat.py -t 0.0.0.0 -p 5555 -l -e="cat /etc/passwd"
+```
 
 ---
 
