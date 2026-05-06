@@ -64,13 +64,16 @@ class Netcat:
 	def execute(self, cmd):
 		cmd = cmd.strip()
 		if not cmd:
-			return
+			return b""
 
-		output = subprocess.check_output(
-			cmd,
-			stderr=subprocess.STDOUT,
-			shell=True
-		)
+		try:
+			output = subprocess.check_output(
+				cmd,
+				stderr=subprocess.STDOUT,
+				shell=True
+			)
+		except subprocess.CalledProcessError as e:
+			output = e.output or b"Command failed\n"
 
 		return output
 
@@ -102,7 +105,14 @@ class Netcat:
 				while b"\n" not in cmd_buffer:
 					cmd_buffer += client_socket.recv(64)
 
-				response = self.execute(cmd_buffer.decode())
+				cmd = cmd_buffer.decode().strip()
+
+				if cmd.lower() in ["exit", "quit", "q"]:
+					client_socket.send(b"Closing connection...\n")
+					client_socket.close()
+					break
+
+				response = self.execute(cmd)
 				client_socket.send(response)
 
 if __name__ == "__main__":
