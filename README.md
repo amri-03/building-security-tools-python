@@ -64,5 +64,5 @@ python netcat.py -t 0.0.0.0 -p 5555 -l -e="cat /etc/passwd"
 
 ## 📌 Note
 
-This is not a production-ready tool.
+This is not a production-ready tool.\
 It is a learning project that reflects my debugging, mistakes, and understandings.
