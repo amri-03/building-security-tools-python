@@ -7,11 +7,12 @@ import subprocess
 def parse_args():
 	parser = argparse.ArgumentParser(description="Netcat Tool")
 
-	parser.add_argument("-t", "--target", default="0.0.0.0")
-	parser.add_argument("-p", "--port", type=int, default=5555)
-	parser.add_argument("-l", "--listen", action="store_true")
-	parser.add_argument("-e", "--execute")
-	parser.add_argument("-u", "--upload")
+	parser.add_argument("-c", "--command", action=store_true, help="command shell")
+	parser.add_argument("-t", "--target", default="0.0.0.0", help="specified IP")
+	parser.add_argument("-p", "--port", type=int, default=5555, help="specified Port")
+	parser.add_argument("-l", "--listen", action="store_true", help="listen")
+	parser.add_argument("-e", "--execute", help="execute commands")
+	parser.add_argument("-u", "--upload", help="upload a file")
 
 	return parser.parse_args()
 
