@@ -31,6 +31,7 @@ class Netcat:
 			while True:
 				response = self.socket.recv(4096)
 				if not response:
+					print("Connection closed by server.")
 					return
 
 					response += data
@@ -38,6 +39,12 @@ class Netcat:
 				print(response.decode(), end="")
 
 				buffer = input("") + "\n"
+
+				if buffer.lower() in ["exit", "quit", "q"]:
+					self.socket.send((buffer + "\n").encode())
+					print("Closing connection...")
+					self.socket.close()
+					return
 
 				self.socket.send((buffer + "\n").encode())
 
@@ -48,18 +55,32 @@ class Netcat:
 
 	def listen(self):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
 		self.socket.bind((self.args.target, self.args.port))
 		self.socket.listen(5)
 
-		while True:
-			client_socket, addr = self.socket.accept()
-			print(f"[*]\n[*] Connection from {addr[0]}:{addr[1]}")
+		print("[*] Server listening...")
 
-			client_thread = threading.Thread(
-				target=self.handle,
-				args=(client_socket,)
-			)
-			client_thread.start()
+		try:
+			while True:
+				client_socket, addr = self.socket.accept()
+				print(f"[*]\n[*] Connection from {addr[0]}:{addr[1]}")
+
+				client_thread = threading.Thread(
+					target=self.handle,
+					args=(client_socket,),
+					daemon=True
+				)
+				client_thread.start()
+
+		except KeyboardInterrupt:
+			print("\n[!] Server shutting down...")
+
+
+		finally:
+			self.socket.close()
+			print("[*] Socket closed cleanly.")
 
 	def execute(self, cmd):
 		cmd = cmd.strip()
@@ -99,7 +120,7 @@ class Netcat:
 
 		else:
 			while True:
-				client_socket.send(b"<BHP: #> <END>")
+				client_socket.send(b"<BHP: #>")
 				cmd_buffer = b""
 
 				while b"\n" not in cmd_buffer:
