@@ -12,7 +12,7 @@ def parse_args():
         parser.add_argument("-p", "--port", type=int, default=5555, help="specified port")
         parser.add_argument("-l", "--listen", action="store_true", help="listen")
         parser.add_argument("-e", "--execute", help="execute specified command")
-        parser.add_argument("-u", "--upload", help="upload file")
+        parser.add_argument("-u", "--upload", help="upload a file")
 
         return parser.parse_args()
 
